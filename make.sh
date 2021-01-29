@@ -1,5 +1,6 @@
 #!/bin/sh
 
+#set -x
 set  -eu
 
 . ./make.config
@@ -19,7 +20,7 @@ if [ ! -f "${STATEFILE}" ]; then
 fi
 
 echo 'Patching...'
-dir="${BSEC_DIR}/examples"
+dir="${BSEC_DIR}/examples/bsec_iot_example"
 patch='patches/eCO2+bVOCe.diff'
 if patch -N --dry-run --silent -d "${dir}/" \
   < "${patch}" 2>/dev/null
@@ -29,14 +30,15 @@ else
   echo 'Already applied.'
 fi
 
+EXAMPLES_DIR="${BSEC_DIR}/examples/bsec_iot_example"
+
 echo 'Compiling...'
 cc -Wall -Wno-unused-but-set-variable -Wno-unused-variable -static \
   -std=c99 -pedantic \
-  -iquote"${BSEC_DIR}"/API \
   -iquote"${BSEC_DIR}"/algo/${ARCH} \
-  -iquote"${BSEC_DIR}"/examples \
-  "${BSEC_DIR}"/API/bme680.c \
-  "${BSEC_DIR}"/examples/bsec_integration.c \
+  -iquote"${EXAMPLES_DIR}" \
+  "${EXAMPLES_DIR}"/bme680.c \
+  "${EXAMPLES_DIR}"/bsec_integration.c \
   ./bsec_bme680.c \
   -L"${BSEC_DIR}"/algo/"${ARCH}" -lalgobsec \
   -lm -lrt \
